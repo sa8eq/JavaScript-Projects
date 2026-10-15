@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="en">
+     <head>
+          <meta charset="UTF-8" />
+          <meta
+               name="viewport"
+               content="width=device-width, initial-scale=1.0"
+          />
+          <title>Document</title>
+          <style>
+               :root {
+                    color-scheme: dark;
+               }
+               * {
+                    box-sizing: border-box;
+               }
+               body {
+                    margin: 0;
+                    padding: 24px;
+                    font-family:
+                         system-ui,
+                         -apple-system,
+                         Segoe UI,
+                         Roboto,
+                         Arial,
+                         sans-serif;
+                    background: #0b1020;
+                    color: #e9eefc;
+               }
+               .app {
+                    max-width: 1100px;
+                    margin: 0 auto;
+               }
+               .card {
+                    background: rgba(255, 255, 255, 0.06);
+                    border: 1px solid rgba(255, 255, 255, 0.12);
+                    border-radius: 18px;
+                    padding: 18px;
+               }
+               .topbar {
+                    display: flex;
+                    gap: 12px;
+                    flex-wrap: wrap;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-bottom: 14px;
+               }
+               h1 {
+                    font-size: 18px;
+                    margin: 0;
+               }
+               .muted {
+                    opacity: 0.75;
+               }
+               .row {
+                    display: flex;
+                    gap: 12px;
+                    flex-wrap: wrap;
+                    align-items: center;
+               }
+               .grid {
+                    display: grid;
+                    grid-template-columns: 1.1fr 0.9fr;
+                    gap: 12px;
+               }
+               @media (max-width: 900px) {
+                    .grid {
+                         grid-template-columns: 1fr;
+                    }
+               }
+               input,
+               select,
+               textarea {
+                    width: 100%;
+                    background: rgba(0, 0, 0, 0.25);
+                    border: 1px solid rgba(255, 255, 255, 0.16);
+                    color: #e9eefc;
+                    border-radius: 12px;
+                    padding: 10px 12px;
+                    outline: none;
+               }
+               label {
+                    font-size: 12px;
+                    opacity: 0.85;
+                    display: block;
+                    margin: 10px 0 6px;
+               }
+               button {
+                    border: 0;
+                    border-radius: 12px;
+                    padding: 10px 14px;
+                    cursor: pointer;
+                    background: #4f7cff;
+                    color: white;
+                    font-weight: 700;
+               }
+               button.secondary {
+                    background: rgba(255, 255, 255, 0.12);
+               }
+               button.danger {
+                    background: #ff4f6d;
+               }
+               button:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+               }
+               .list {
+                    display: grid;
+                    gap: 10px;
+                    margin-top: 10px;
+               }
+               .item {
+                    padding: 12px;
+                    border-radius: 14px;
+                    background: rgba(0, 0, 0, 0.18);
+                    border: 1px solid rgba(255, 255, 255, 0.08);
+                    display: grid;
+                    grid-template-columns: 1fr auto;
+                    gap: 10px;
+                    align-items: start;
+               }
+               .name {
+                    font-weight: 900;
+                    margin: 0 0 4px;
+               }
+               .meta {
+                    margin: 0;
+                    opacity: 0.8;
+                    line-height: 1.45;
+               }
+               .pill {
+                    display: inline-block;
+                    padding: 3px 10px;
+                    border-radius: 999px;
+                    font-size: 12px;
+                    background: rgba(255, 255, 255, 0.1);
+                    border: 1px solid rgba(255, 255, 255, 0.14);
+                    opacity: 0.9;
+                    margin-right: 6px;
+                    margin-top: 6px;
+               }
+               .actions {
+                    display: flex;
+                    gap: 8px;
+               }
+               .actions button {
+                    padding: 8px 10px;
+                    font-size: 13px;
+               }
+               .status {
+                    display: flex;
+                    gap: 10px;
+                    align-items: center;
+                    margin-top: 8px;
+               }
+               .spinner {
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 999px;
+                    border: 2px solid rgba(255, 255, 255, 0.25);
+                    border-top-color: white;
+                    animation: spin 0.85s linear infinite;
+               }
+               @keyframes spin {
+                    to {
+                         transform: rotate(360deg);
+                    }
+               }
+               .toast {
+                    position: fixed;
+                    right: 18px;
+                    bottom: 18px;
+                    background: rgba(0, 0, 0, 0.55);
+                    border: 1px solid rgba(255, 255, 255, 0.18);
+                    backdrop-filter: blur(10px);
+                    padding: 12px 14px;
+                    border-radius: 14px;
+                    display: none;
+                    max-width: 360px;
+                    line-height: 1.35;
+               }
+               .backdrop {
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(0, 0, 0, 0.55);
+                    display: none; /* ✅ shown only when editing */
+                    align-items: center;
+                    justify-content: center;
+                    padding: 18px;
+               }
+               .modal {
+                    width: min(720px, 100%);
+                    background: rgba(12, 16, 32, 0.98);
+                    border: 1px solid rgba(255, 255, 255, 0.14);
+                    border-radius: 18px;
+                    padding: 16px;
+               }
+               .modal h2 {
+                    margin: 0 0 6px;
+                    font-size: 16px;
+               }
+               .modal .row {
+                    justify-content: flex-end;
+                    margin-top: 12px;
+               }
+          </style>
+     </head>
+     <body>
+          <div class="app">
+               <div class="card">
+                    <!-- ✅ Header: title + API info + reload -->
+                    <div class="topbar">
+                         <div>
+                              <h1>Students CRUD Demo (Fetch + async/await)</h1>
+                              <div class="muted">
+                                   Simulated students data built from a public
+                                   API response
+                              </div>
+                         </div>
+
+                         <div class="row">
+                              <span class="pill" id="apiInfo"
+                                   >GET /users (mapped to Students)</span
+                              >
+                              <button class="secondary" id="btnReload">
+                                   Reload
+                              </button>
+                         </div>
+                    </div>
+
+                    <div class="grid">
+                         <!-- ======================================================
+               ✅ Left Side: Students list + search
+               ====================================================== -->
+                         <section>
+                              <div
+                                   class="row"
+                                   style="justify-content: space-between"
+                              >
+                                   <div class="row">
+                                        <strong>Students</strong>
+                                        <span class="muted" id="count"></span>
+                                   </div>
+
+                                   <div class="row">
+                                        <input
+                                             id="search"
+                                             placeholder="Search name or email…"
+                                             style="width: 280px"
+                                        />
+                                   </div>
+                              </div>
+
+                              <!-- ✅ Loading area (hidden by default) -->
+                              <div
+                                   class="status muted"
+                                   id="loading"
+                                   style="display: none"
+                              >
+                                   <div class="spinner"></div>
+                                   <div>Loading…</div>
+                              </div>
+
+                              <!-- ✅ Error text (hidden by default) -->
+                              <div
+                                   class="muted"
+                                   id="error"
+                                   style="margin-top: 10px; display: none"
+                              ></div>
+
+                              <!-- ✅ Students will be rendered here -->
+                              <div class="list" id="list"></div>
+                         </section>
+
+                         <!-- ======================================================
+               ✅ Right Side: Add Student form
+               ====================================================== -->
+                         <section class="card" style="padding: 14px">
+                              <strong>Add New Student</strong>
+                              <div class="muted" style="margin-top: 6px">
+                                   Sends a POST request (demo). Student is added
+                                   to local list so CRUD feels real.
+                              </div>
+
+                              <label for="addName">Full Name</label>
+                              <input
+                                   id="addName"
+                                   placeholder="e.g., Omar Abu-Hadhoud"
+                              />
+
+                              <label for="addEmail">Email</label>
+                              <input
+                                   id="addEmail"
+                                   placeholder="e.g., omar@example.com"
+                              />
+
+                              <label for="addMajor">Major</label>
+                              <select id="addMajor">
+                                   <option value="Computer Science">
+                                        Computer Science
+                                   </option>
+                                   <option value="Software Engineering">
+                                        Software Engineering
+                                   </option>
+                                   <option value="Information Systems">
+                                        Information Systems
+                                   </option>
+                                   <option value="Cybersecurity">
+                                        Cybersecurity
+                                   </option>
+                                   <option value="Data Science">
+                                        Data Science
+                                   </option>
+                              </select>
+
+                              <label for="addGpa">GPA (0.0 – 4.0)</label>
+                              <input
+                                   id="addGpa"
+                                   type="number"
+                                   min="0"
+                                   max="4"
+                                   step="0.1"
+                                   value="3.2"
+                              />
+
+                              <div
+                                   class="row"
+                                   style="
+                                        margin-top: 12px;
+                                        justify-content: flex-end;
+                                   "
+                              >
+                                   <button class="secondary" id="btnClear">
+                                        Clear
+                                   </button>
+                                   <button id="btnAdd">Create (POST)</button>
+                              </div>
+
+                              <div class="muted" style="margin-top: 10px">
+                                   Tip: In real APIs, students would be stored
+                                   in your backend database.
+                              </div>
+                         </section>
+                    </div>
+               </div>
+          </div>
+
+          <!-- =========================================================
+         ✅ Edit Modal (shown when editing a student)
+         ========================================================= -->
+          <div class="backdrop" id="backdrop" aria-hidden="true">
+               <div
+                    class="modal"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="modalTitle"
+               >
+                    <h2 id="modalTitle">Edit Student</h2>
+                    <div
+                         class="muted"
+                         id="editMeta"
+                         style="margin-bottom: 10px"
+                    ></div>
+
+                    <label for="editName">Full Name</label>
+                    <input id="editName" />
+
+                    <label for="editEmail">Email</label>
+                    <input id="editEmail" />
+
+                    <label for="editMajor">Major</label>
+                    <select id="editMajor">
+                         <option value="Computer Science">
+                              Computer Science
+                         </option>
+                         <option value="Software Engineering">
+                              Software Engineering
+                         </option>
+                         <option value="Information Systems">
+                              Information Systems
+                         </option>
+                         <option value="Cybersecurity">Cybersecurity</option>
+                         <option value="Data Science">Data Science</option>
+                    </select>
+
+                    <label for="editGpa">GPA (0.0 – 4.0)</label>
+                    <input
+                         id="editGpa"
+                         type="number"
+                         min="0"
+                         max="4"
+                         step="0.1"
+                    />
+
+                    <div class="row">
+                         <button class="secondary" id="btnCancel">
+                              Cancel
+                         </button>
+                         <button id="btnUpdate">Update (PUT)</button>
+                    </div>
+               </div>
+          </div>
+
+          <!-- ✅ Toast message container -->
+          <div class="toast" id="toast"></div>
+          <script>
+               const API_BASE = "https://jsonplaceholder.typicode.com";
+               const LIST_URL = `${API_BASE}/users`;
+               const UI = {
+                    list: document.getElementById("list"),
+                    loading: document.getElementById("loading"),
+                    error: document.getElementById("error"),
+                    count: document.getElementById("count"),
+                    search: document.getElementById("search"),
+
+                    btnReload: document.getElementById("btnReload"),
+
+                    addName: document.getElementById("addName"),
+                    addEmail: document.getElementById("addEmail"),
+                    addMajor: document.getElementById("addMajor"),
+                    addGpa: document.getElementById("addGpa"),
+                    btnAdd: document.getElementById("btnAdd"),
+                    btnClear: document.getElementById("btnClear"),
+
+                    backdrop: document.getElementById("backdrop"),
+                    editName: document.getElementById("editName"),
+                    editEmail: document.getElementById("editEmail"),
+                    editMajor: document.getElementById("editMajor"),
+                    editGpa: document.getElementById("editGpa"),
+                    editMeta: document.getElementById("editMeta"),
+                    btnCancel: document.getElementById("btnCancel"),
+                    btnUpdate: document.getElementById("btnUpdate"),
+                    toast: document.getElementById("toast"),
+               };
+               let students = [];
+               let MAJORS = [
+                    "Computer Science",
+                    "Software Engineering",
+                    "Information Systems",
+                    "Cybersecurity",
+                    "Data Science",
+               ];
+               let editingId = null;
+
+               function showToast(message) {
+                    UI.toast.textContent = message;
+                    UI.toast.style.display = "block";
+
+                    setTimeout(() => {
+                         UI.toast.style.display = "none";
+                    }, 2200);
+               }
+               function setLoading(isLoading) {
+                    UI.loading.style.display = isLoading ? "flex" : "none";
+               }
+               function setError(message) {
+                    UI.error.textContent = message;
+                    UI.error.style.display = message ? "block" : "none";
+               }
+               function openModal() {
+                    UI.backdrop.style.display = "flex";
+                    UI.backdrop.setAttribute("aria-hidden", "false");
+               }
+               function closeModal() {
+                    UI.backdrop.style.display = "none";
+                    UI.backdrop.setAttribute("aria-hidden", "true");
+                    editingId = null;
+               }
+               function esc(s) {
+                    return String(s)
+                         .replaceAll("&", "&amp;")
+                         .replaceAll("<", "&lt;")
+                         .replaceAll(">", "&gt;")
+                         .replaceAll('"', "&quot;")
+                         .replaceAll("'", "&#039;");
+               }
+               function clampGpa(value) {
+                    const n = Number(value);
+                    if (Number.isNaN(n)) return;
+                    return Math.min(4, Math.max(0, Math.round(n * 10) / 10));
+               }
+               async function apiFetch(url, options = {}) {
+                    const res = await fetch(url, {
+                         headers: {
+                              "Content-Type": "application/json",
+                              ...(options.headers || {}),
+                         },
+                         ...options,
+                    });
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    const text = await res.text();
+                    return text ? JSON.parse(text) : null;
+               }
+               function render() {
+                    const q = UI.search.value.trim().toLowerCase();
+                    const filtered = q
+                         ? students.filter(
+                                (s) =>
+                                     s.fullName.toLowerCase().includes(q) ||
+                                     s.email.toLowerCase().includes(q) ||
+                                     s.major.toLowerCase().includes(q),
+                           )
+                         : students;
+
+                    UI.count.textContent = `${filtered.length.toLocaleString()} shown`;
+                    UI.list.innerHTML = filtered
+                         .map(
+                              (s) => `
+                 <div class="item">
+                   <div>
+                     <div class="name">${esc(s.fullName)}</div>
+                     <p class="meta">${esc(s.email)}</p>
+
+                     <div style="margin-top:6px;">
+                       <span class="pill">id: ${s.id}</span>
+                       <span class="pill">Major: ${esc(s.major)}</span>
+                       <span class="pill">GPA: ${Number(s.gpa).toFixed(1)}</span>
+                     </div>
+                   </div>
+
+                   <div class="actions">
+                     <!-- ✅ Inline onclick calls global functions exposed below -->
+                     <button class="secondary" onclick="window.__editStudent(${
+                          s.id
+                     })">Edit</button>
+                     <button class="danger" onclick="window.__delStudent(${
+                          s.id
+                     })">Delete</button>
+                   </div>
+                 </div>
+               `,
+                         )
+                         .join("");
+               }
+               async function loadStudents() {
+                    UI.btnReload.disabled = true;
+                    setError("");
+                    setLoading(true);
+
+                    try {
+                         const users = await apiFetch(LIST_URL, {
+                              method: "GET",
+                         });
+                         students = users.map((u) => ({
+                              id: u.id,
+                              fullName: u.name,
+                              email: u.email,
+                              major: MAJORS[u.id % MAJORS.length],
+                              gpa: clampGpa(2.6 + (u.id % 15) * 0.1),
+                         }));
+                         render();
+                         showToast("Loaded Students");
+                    } catch (e) {
+                         setError(`Failed To Load Students: ${e.message}`);
+                    } finally {
+                         setLoading(false);
+                         UI.btnReload.disabled = false;
+                    }
+               }
+               async function createStudent() {
+                    const fullName = UI.addName.value.trim();
+                    const email = UI.addEmail.value.trim();
+                    const major = UI.addMajor.value.trim();
+                    const gpa = UI.addGpa.value.trim();
+
+                    if (!fullName) return showToast("Name Is Required");
+                    if (!email || !email.includes("@")) {
+                         return showToast("Valid Email Is Required");
+                    }
+                    UI.btnAdd.disabled = true;
+                    setError("");
+                    try {
+                         const created = await apiFetch(`${API_BASE}/users`, {
+                              method: "POST",
+                              body: JSON.stringify({
+                                   name: fullName,
+                                   email,
+                                   major,
+                                   gpa,
+                              }),
+                         });
+                         const newStudent = {
+                              id: created?.id ?? Date.now(),
+                              fullName,
+                              email,
+                              major,
+                              gpa,
+                         };
+                         students.unshift(newStudent);
+                         UI.addName.value = "";
+                         UI.addEmail.value = "";
+                         UI.addMajor.value = "Computer Science";
+                         UI.addGpa.value = "3.2";
+                         render();
+                         showToast("Student Created (POST)");
+                    } catch (e) {
+                         setError(`Creating Student Failed: ${e.message}`);
+                    } finally {
+                         UI.btnAdd.disabled = false;
+                    }
+               }
+               function startEdit(id) {
+                    const s = students.find((x) => x.id === id);
+                    if (!s) return;
+
+                    editingId = id;
+
+                    UI.editName.value = s.fullName;
+                    UI.editEmail.value = s.email;
+                    UI.editMajor.value = s.major;
+                    UI.editGpa.value = s.gpa;
+
+                    UI.editMeta.textContent = `Editing Student ID: ${id}`;
+                    openModal();
+               }
+               async function updateStudent() {
+                    if (editingId == null) return;
+
+                    const fullName = UI.editName.value.trim();
+                    const email = UI.editEmail.value.trim();
+                    const major = UI.editMajor.value;
+                    const gpa = clampGpa(UI.editGpa.value);
+
+                    if (!fullName) return showToast("❌ Name is required");
+                    if (!email || !email.includes("@"))
+                         return showToast("❌ Valid email is required");
+
+                    UI.btnUpdate.disabled = true;
+                    setError("");
+
+                    const idx = students.findIndex((s) => s.id === editingId);
+
+                    // ✅ Backup old data in case we need revert
+                    const old = { ...students[idx] };
+
+                    // ✅ Optimistic UI change (update now)
+                    students[idx] = {
+                         ...students[idx],
+                         fullName,
+                         email,
+                         major,
+                         gpa,
+                    };
+                    render();
+
+                    try {
+                         // ✅ Demo PUT request
+                         await apiFetch(`${API_BASE}/users/${editingId}`, {
+                              method: "PUT",
+                              body: JSON.stringify({
+                                   id: editingId,
+                                   name: fullName,
+                                   email,
+                                   major,
+                                   gpa,
+                              }),
+                         });
+
+                         showToast("✅ Student updated (PUT)");
+                         closeModal();
+                    } catch (e) {
+                         // ✅ If API failed → revert UI back
+                         students[idx] = old;
+                         render();
+
+                         setError(`❌ Update failed: ${e.message}`);
+                         showToast("❌ Update failed (reverted)");
+                    } finally {
+                         UI.btnUpdate.disabled = false;
+                    }
+               }
+               async function deleteStudent(id) {
+                    const s = students.find((x) => x.id === id);
+                    if (!s) return;
+
+                    // ✅ Ask user before deleting
+                    if (!confirm(`Delete student "${s.fullName}"?`)) return;
+
+                    setError("");
+
+                    // ✅ Backup list before removing
+                    const backup = [...students];
+
+                    // ✅ Remove locally
+                    students = students.filter((x) => x.id !== id);
+                    render();
+
+                    try {
+                         // ✅ Demo DELETE request
+                         await apiFetch(`${API_BASE}/users/${id}`, {
+                              method: "DELETE",
+                         });
+                         showToast("✅ Student deleted (DELETE)");
+                    } catch (e) {
+                         // ✅ Revert if API fails
+                         students = backup;
+                         render();
+
+                         setError(`❌ Delete failed: ${e.message}`);
+                         showToast("❌ Delete failed (reverted)");
+                    }
+               }
+
+               window.__editStudent = startEdit;
+               window.__delStudent = deleteStudent;
+
+               UI.btnReload.addEventListener("click", loadStudents);
+               UI.btnAdd.addEventListener("click", createStudent);
+               UI.btnClear.addEventListener("click", () => {
+                    UI.addName.value = "";
+                    UI.addEmail.value = "";
+                    UI.addMajor.value = "Computer Science";
+                    UI.addGpa.value = "3.2";
+               });
+               UI.search.addEventListener("input", render);
+               UI.btnCancel.addEventListener("click", closeModal);
+               UI.backdrop.addEventListener("click", (e) => {
+                    if (e.target === UI.backdrop) closeModal();
+               });
+               UI.btnUpdate.addEventListener("click", updateStudent);
+               window.addEventListener("keydown", (e) => {
+                    if (
+                         e.key === "Escape" &&
+                         UI.backdrop.style.display === "flex"
+                    )
+                         closeModal();
+               });
+               loadStudents();
+          </script>
+     </body>
+</html>
